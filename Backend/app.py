@@ -10,7 +10,6 @@ from typing import List, Optional
 load_dotenv()
 
 app = FastAPI()
-# MongoDB connection parameters
 MONGO_HOST = os.getenv("MONGO_HOST")
 MONGO_PORT = int(os.getenv("MONGO_PORT"))
 MONGO_USERNAME = os.getenv("MONGO_USERNAME")
@@ -77,6 +76,11 @@ class OrderResponse(BaseModel):
 class PaginatedOrderResponse(BaseModel):
     data: List[OrderResponse]
     page: dict
+
+# Health check endpoint
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
 
 # Product endpoints
 @app.post("/products", status_code=status.HTTP_201_CREATED)
