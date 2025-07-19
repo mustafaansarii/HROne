@@ -16,7 +16,17 @@ if not MONGO_URI:
 
 # MongoDB connection
 try:
-    client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
+    ssl_opts = {
+        "ssl": True,
+        "ssl_ca_certs": "/etc/ssl/certs/ca-certificates.crt",  
+        "ssl_cert_reqs": "CERT_REQUIRED"
+    }
+    
+    client = MongoClient(
+        MONGO_URI,
+        serverSelectionTimeoutMS=5000,
+        **ssl_opts
+    )
     client.server_info()
     db = client["hrone"]
     products = db["products"]
