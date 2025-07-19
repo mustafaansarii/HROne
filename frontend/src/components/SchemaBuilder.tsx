@@ -1,24 +1,16 @@
 import { useForm, useFieldArray, useWatch } from 'react-hook-form';
 import { useEffect, useCallback } from 'react';
 import { SchemaField } from './SchemaField';
+import type { SchemaField as SchemaFieldType, SchemaBuilderProps } from './types';
 
-interface SchemaField {
-  id: string;
-  key: string;
-  type: 'string' | 'number' | 'nested';
-  children?: SchemaField[];
-}
-
-interface SchemaBuilderProps {
-  initialData?: {
-    fields: SchemaField[];
-  };
+interface FormValues {
+  fields: SchemaFieldType[];
 }
 
 export function SchemaBuilder({ initialData }: SchemaBuilderProps) {
-  const { control, handleSubmit } = useForm({
+  const { control, handleSubmit } = useForm<FormValues>({
     defaultValues: {
-      fields: initialData?.fields || [{ id: crypto.randomUUID(), key: '', type: 'string' as const }],
+      fields: initialData?.fields || [{ id: crypto.randomUUID(), key: '', type: 'string' as const, children: [] }],
     },
   });
 
@@ -41,7 +33,7 @@ export function SchemaBuilder({ initialData }: SchemaBuilderProps) {
     return result;
   }, []);
 
-  const watchedFields = useWatch({ name: 'fields', control });
+  const watchedFields = useWatch({ name: 'fields' });
 
   useEffect(() => {
     if (watchedFields) {
@@ -54,7 +46,7 @@ export function SchemaBuilder({ initialData }: SchemaBuilderProps) {
     }
   }, [watchedFields, formatJsonPreview]);
 
-  const onSubmit = (data: { fields: SchemaField[] }) => {
+  const onSubmit = (data: FormValues) => {
     console.log('Form submitted:', data);
   };
 

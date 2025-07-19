@@ -4,19 +4,14 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { X, Plus } from 'lucide-react';
-
-interface Field {
-  id: string;
-  key: string;
-  type: 'string' | 'number' | 'nested';
-  children?: Field[];
-}
+import type { UseFormReturn } from 'react-hook-form';
+import type { SchemaField } from './types';
 
 interface SchemaFieldProps {
-  field: Field;
+  field: SchemaField;
   index: number;
   remove: (index?: number | number[]) => void;
-  control: any;
+  control: UseFormReturn<{ fields: SchemaField[] }>['control'];
   namePrefix: string;
   nestingLevel: number;
 }
@@ -95,7 +90,7 @@ export function SchemaField({ field, index, remove, control, namePrefix, nesting
 
       {isNested && (
         <div className="flex flex-col gap-2 mt-2 w-full">
-          {nestedFields.map((nestedField, nestedIndex) => (
+          {nestedFields.map((nestedField: SchemaField, nestedIndex: number) => (
             <SchemaField
               key={nestedField.id}
               field={nestedField}
