@@ -18,7 +18,7 @@ if not MONGO_URI:
 try:
     ssl_opts = {
         "ssl": True,
-        "ssl_ca_certs": "/etc/ssl/certs/ca-certificates.crt",  
+        "tlsCAFile": "/etc/ssl/certs/ca-certificates.crt",
         "ssl_cert_reqs": "CERT_REQUIRED"
     }
     
