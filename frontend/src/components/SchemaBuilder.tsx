@@ -1,6 +1,6 @@
-import { useForm, useFieldArray } from 'react-hook-form';
-import { SchemaField } from './SchemaField';
+import { useForm, useFieldArray, useWatch } from 'react-hook-form';
 import { useEffect, useCallback } from 'react';
+import { SchemaField } from './SchemaField';
 
 interface SchemaField {
   id: string;
@@ -16,7 +16,7 @@ interface SchemaBuilderProps {
 }
 
 export function SchemaBuilder({ initialData }: SchemaBuilderProps) {
-  const { control, handleSubmit, watch } = useForm({
+  const { control, handleSubmit } = useForm({
     defaultValues: {
       fields: initialData?.fields || [{ id: crypto.randomUUID(), key: '', type: 'string' as const }],
     },
@@ -41,22 +41,18 @@ export function SchemaBuilder({ initialData }: SchemaBuilderProps) {
     return result;
   }, []);
 
-  useEffect(() => {
-    const subscription = watch(({ fields }: { fields: SchemaField[] }) => {
-      if (fields) {
-        const formattedJson = formatJsonPreview(fields);
-        const json = JSON.stringify(formattedJson, null, 2);
-        const previewElement = document.getElementById('json-preview');
-        if (previewElement) {
-          previewElement.textContent = json;
-        }
-      }
-    });
+  const watchedFields = useWatch({ name: 'fields', control });
 
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [watch, formatJsonPreview]);
+  useEffect(() => {
+    if (watchedFields) {
+      const formattedJson = formatJsonPreview(watchedFields);
+      const json = JSON.stringify(formattedJson, null, 2);
+      const previewElement = document.getElementById('json-preview');
+      if (previewElement) {
+        previewElement.textContent = json;
+      }
+    }
+  }, [watchedFields, formatJsonPreview]);
 
   const onSubmit = (data: { fields: SchemaField[] }) => {
     console.log('Form submitted:', data);
