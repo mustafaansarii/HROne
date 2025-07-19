@@ -17,9 +17,9 @@ if not MONGO_URI:
 # MongoDB connection
 try:
     ssl_opts = {
-        "ssl": True,
+        "tls": True,
         "tlsCAFile": "/etc/ssl/certs/ca-certificates.crt",
-        "ssl_cert_reqs": "CERT_REQUIRED"
+        "tlsAllowInvalidCertificates": False
     }
     
     client = MongoClient(
