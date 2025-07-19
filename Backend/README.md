@@ -2,6 +2,7 @@
 
 This document provides example API requests and their expected responses for the **Product** and **Order** endpoints.
 
+### -Note: For MongoDB hosting, I opted for ScaleGrid instead of MongoDB Atlas due to issues with TLS certificate verification on Render.
 ---
 
 ## 1. Product Endpoints
