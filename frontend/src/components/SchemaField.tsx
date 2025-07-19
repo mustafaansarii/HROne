@@ -5,13 +5,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { X, Plus } from 'lucide-react';
 import type { UseFormReturn } from 'react-hook-form';
-import type { SchemaField } from './types';
+import type { SchemaField, FieldPath } from './types';
 
 interface SchemaFieldProps {
   field: SchemaField;
   index: number;
-  remove: (index?: number | number[]) => void;
-  control: UseFormReturn<{ fields: SchemaField[] }>['control'];
+  remove: (index?: FieldPath | FieldPath[]) => void;
+  control: UseFormReturn<{ schemaFields: SchemaField[] }>['control'];
   namePrefix: string;
   nestingLevel: number;
 }
@@ -19,7 +19,7 @@ interface SchemaFieldProps {
 export function SchemaField({ field, index, remove, control, namePrefix, nestingLevel }: SchemaFieldProps) {
   const { fields: nestedFields, append: appendNested, remove: removeNested } = useFieldArray({
     control,
-    name: `${namePrefix}.children` as 'fields.0.children',
+    name: `${namePrefix}.children` as 'schemaFields',
   });
 
   const isNested = field.type === 'nested';
@@ -35,7 +35,7 @@ export function SchemaField({ field, index, remove, control, namePrefix, nesting
             Field Key
           </Label>
           <Controller
-            name={`${namePrefix}.key` as 'fields.0.key'}
+            name={`${namePrefix}.key` as `schemaFields.${number}.key`}
             control={control}
             rules={{ required: 'Key is required' }}
             render={({ field: controllerField, fieldState: { error } }) => (
@@ -45,6 +45,9 @@ export function SchemaField({ field, index, remove, control, namePrefix, nesting
                   id={`${namePrefix}.key`}
                   placeholder="Field Name/Key"
                   className="w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                  value={controllerField.value as string}
+                  onChange={controllerField.onChange}
+                  onBlur={controllerField.onBlur}
                 />
                 {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
               </>
@@ -57,12 +60,12 @@ export function SchemaField({ field, index, remove, control, namePrefix, nesting
             Field Type
           </Label>
           <Controller
-            name={`${namePrefix}.type` as 'fields.0.type'}
+            name={`${namePrefix}.type` as `schemaFields.${number}.type`}
             control={control}
             render={({ field: controllerField }) => (
               <Select
                 onValueChange={controllerField.onChange}
-                value={controllerField.value}
+                value={controllerField.value as string}
               >
                 <SelectTrigger className="w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
                   <SelectValue placeholder="Select Type" />
@@ -79,7 +82,7 @@ export function SchemaField({ field, index, remove, control, namePrefix, nesting
 
         <Button
           type="button"
-          onClick={() => remove(index)}
+          onClick={() => remove(`${namePrefix}` as FieldPath)}
           variant="ghost"
           size="icon"
           className="text-red-500 hover:bg-red-100 dark:hover:bg-red-900/20 rounded-full"
@@ -90,12 +93,12 @@ export function SchemaField({ field, index, remove, control, namePrefix, nesting
 
       {isNested && (
         <div className="flex flex-col gap-2 mt-2 w-full">
-          {nestedFields.map((nestedField: SchemaField, nestedIndex: number) => (
+          {nestedFields.map((nestedField, nestedIndex) => (
             <SchemaField
               key={nestedField.id}
               field={nestedField}
               index={nestedIndex}
-              remove={removeNested}
+              remove={(index?: number) => removeNested(nestedIndex)}
               control={control}
               namePrefix={`${namePrefix}.children.${nestedIndex}`}
               nestingLevel={nestingLevel + 1}
@@ -103,7 +106,7 @@ export function SchemaField({ field, index, remove, control, namePrefix, nesting
           ))}
           <Button
             type="button"
-            onClick={() => appendNested({ key: '', type: 'string' })}
+            onClick={() => appendNested({ id: crypto.randomUUID(), key: '', type: 'string' })}
             className="w-full mt-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-md shadow-sm transition-colors"
           >
             <Plus className="h-4 w-4 mr-2" /> Add Nested Item
