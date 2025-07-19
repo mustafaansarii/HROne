@@ -3,36 +3,38 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, status, Query
 from pymongo import MongoClient
 from pymongo.errors import ServerSelectionTimeoutError
+from urllib.parse import quote_plus
 from pydantic import BaseModel, Field
 from bson import ObjectId
 from typing import List, Optional
 load_dotenv()
 
 app = FastAPI()
-
-MONGO_URI = os.getenv("MONGO_URI")
-if not MONGO_URI:
-    raise ValueError("MONGO_URI environment variable is not set")
+# MongoDB connection parameters
+MONGO_HOST = os.getenv("MONGO_HOST")
+MONGO_PORT = int(os.getenv("MONGO_PORT"))
+MONGO_USERNAME = os.getenv("MONGO_USERNAME")
+MONGO_PASSWORD = os.getenv("MONGO_PASSWORD")
+MONGO_DATABASE = os.getenv("MONGO_DATABASE")
+MONGO_SSL = os.getenv("MONGO_SSL").lower() == "true"
 
 # MongoDB connection
 try:
-    ssl_opts = {
-        "tls": True,
-        "tlsCAFile": "/etc/ssl/certs/ca-certificates.crt",
-        "tlsAllowInvalidCertificates": False
-    }
-    
     client = MongoClient(
-        MONGO_URI,
-        serverSelectionTimeoutMS=5000,
-        **ssl_opts
+        host=MONGO_HOST,
+        port=MONGO_PORT,
+        username=MONGO_USERNAME,
+        password=MONGO_PASSWORD,
+        ssl=MONGO_SSL,
+        tlsAllowInvalidCertificates=True,
+        serverSelectionTimeoutMS=5000
     )
     client.server_info()
     db = client["hrone"]
     products = db["products"]
     orders = db["orders"]
 except ServerSelectionTimeoutError as e:
-    raise ConnectionError(f"Failed to connect to MongoDB Atlas: {str(e)}")
+    raise ConnectionError(f"Failed to connect to MongoDB: {str(e)}")
 except Exception as e:
     raise ConnectionError(f"Unexpected error connecting to MongoDB: {str(e)}")
 
