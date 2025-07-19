@@ -2,7 +2,7 @@
 
 This is a json schema builder that can be used to build json schemas for any purpose.
 
-**Preview:** https://json-schema-builder.vercel.app/
+**Preview:** https://hr-one-frontend.vercel.app/
 
 **Screenshot:**
 
