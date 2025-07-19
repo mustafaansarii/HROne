@@ -8,14 +8,21 @@ This document provides example API requests and their expected responses for the
 
 ### 🔹 Create Product
 
-```bash
-curl -X POST "http://localhost:8000/products" \
--H "Content-Type: application/json" \
--d '{"name": "Premium Laptop", "price": 1299.99, "sizes": ["Standard"]}'
-````
+**Method:** POST
+**URL:** https://hrone-d4cc.onrender.com/products
+**Headers:**
+- Content-Type: application/json
+
+**Request Body:**
+```json
+{
+  "name": "Premium Laptop",
+  "price": 1299.99,
+  "sizes": ["Standard"]
+}
+```
 
 **Expected Response:**
-
 ```json
 {
   "id": "687b0527bd3b1eb21cea2a80"
@@ -26,12 +33,14 @@ curl -X POST "http://localhost:8000/products" \
 
 ### 🔹 List Products
 
-```bash
-curl "http://localhost:8000/products?name=laptop&limit=5&offset=0"
-```
+**Method:** GET
+**URL:** https://hrone-d4cc.onrender.com/products
+**Query Parameters:**
+- name: laptop
+- limit: 5
+- offset: 0
 
 **Expected Response:**
-
 ```json
 {
   "data": [
@@ -65,14 +74,23 @@ curl "http://localhost:8000/products?name=laptop&limit=5&offset=0"
 
 ### 🔹 Create Order
 
-```bash
-curl -X POST "http://localhost:8000/orders" \
--H "Content-Type: application/json" \
--d '{"userId": "user123", "items": [{"productId": "687b0527bd3b1eb21cea2a80", "qty": 2}]}'
+**Method:** POST
+**URL:** https://hrone-d4cc.onrender.com/orders
+**Headers:**
+- Content-Type: application/json
+
+**Request Body:**
+```json
+{
+  "userId": "user123",
+  "items": [{
+    "productId": "687b0527bd3b1eb21cea2a80",
+    "qty": 2
+  }]
+}
 ```
 
 **Expected Response:**
-
 ```json
 {
   "id": "687b052fbd3b1eb21cea2a81"
@@ -83,12 +101,13 @@ curl -X POST "http://localhost:8000/orders" \
 
 ### 🔹 Get User Orders
 
-```bash
-curl "http://localhost:8000/orders/user123?limit=3&offset=0"
-```
+**Method:** GET
+**URL:** https://hrone-d4cc.onrender.com/orders/user123
+**Query Parameters:**
+- limit: 3
+- offset: 0
 
 **Expected Response:**
-
 ```json
 {
   "data": [
